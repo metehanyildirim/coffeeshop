@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+         xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xmlns:mvc="http://www.springframework.org/schema/mvc"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <mvc:annotation-driven />
+
+    <context:component-scan base-package="edu.hacettepe" />
+
+    <http pattern="/favicon.ico" security="none"/>
+    <http pattern="/resource/**" security="none"/>
+    <http auto-config="true">
+        <intercept-url pattern="/users/login" access="permitAll()"/>
+        <intercept-url pattern="/jsp/login.jsp" access="permitAll()"/>
+        <intercept-url pattern="/api/**" access="permitAll()"/>
+        <intercept-url pattern="/jsp/register.jsp" access="permitAll()"/>
+        <intercept-url pattern="/users/add" access="permitAll()" />
+        <intercept-url pattern="/users/delete" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/users/list" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/products/add" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/products/delete" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/products/update" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/orders/setStatus" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')" />
+
+        <form-login
+            login-page="/jsp/login.jsp"
+            login-processing-url="/users/login"
+            username-parameter="username"
+            password-parameter="password"/>
+        <logout logout-url="/users/logout"/>
+        <logout logout-success-url="/jsp/login.jsp" />
+
+        <csrf disabled="true"/>
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query=
+                                       "select username , password , enabled from coffeeuser where username=?"
+                               authorities-by-username-query=
+                                       "select username, role from coffeeuser where username =?" />
+        </authentication-provider>
+    </authentication-manager>
+
+
+</b:beans>

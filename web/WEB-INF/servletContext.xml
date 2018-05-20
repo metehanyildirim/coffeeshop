@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:beans="http://www.springframework.org/schema/c" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:security="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <mvc:annotation-driven />
+
+    <bean class = "org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name = "prefix" value = "/jsp/" />
+        <property name = "suffix" value = ".jsp" />
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    </bean>
+
+
+
+    <bean id="myDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="jdbc:postgresql://localhost:32768/" />
+        <property name="username" value="docker" />
+        <property name="password" value="docker" />
+    </bean>
+
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="packagesToScan" value="edu.hacettepe.DAO" />
+        <property name="dataSource" ref="myDataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>edu.hacettepe.DAO.Product</value>
+                <value>edu.hacettepe.DAO.User</value>
+                <value>edu.hacettepe.DAO.Order</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL9Dialect</prop>
+            </props>
+        </property>
+    </bean>
+
+
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <bean name="jsonRepository" class="edu.hacettepe.repository.JSONRepository"/>
+    <bean name="dbRepository" class="edu.hacettepe.repository.DBRepository">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean name="orderService" class="edu.hacettepe.services.OrderService">
+        <property name="repository" ref="dbRepository" />
+    </bean>
+
+    <bean name="userService" class="edu.hacettepe.services.UserService">
+        <property name="repository" ref="dbRepository" />
+    </bean>
+
+    <bean name="productService" class="edu.hacettepe.services.ProductService">
+        <property name="repository" ref="dbRepository" />
+    </bean>
+
+
+    <bean name="orderController" class="edu.hacettepe.controllers.OrderController">
+        <property name="orderService" ref="orderService"/>
+        <property name="productService" ref="productService"/>
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean name="userController" class="edu.hacettepe.controllers.UserController">
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean name="productController" class="edu.hacettepe.controllers.ProductController">
+        <property name="productService" ref="productService" />
+    </bean>
+
+    <bean name="apiController" class="edu.hacettepe.controllers.APIController">
+        <property name="productService" ref="productService"/>
+        <property name="orderService" ref="orderService"/>
+        <property name="userService" ref="userService"/>
+    </bean>
+
+    <bean name="homeController" class="edu.hacettepe.controllers.HomeController">
+        <property name="productService" ref="productService" />
+        <property name="userService" ref="userService"/>
+        <property name="orderService" ref="orderService"/>
+    </bean>
+
+</beans>
+
