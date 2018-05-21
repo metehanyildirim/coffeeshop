@@ -22,29 +22,13 @@ import java.util.Iterator;
 import java.util.List;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private OrderService orderService;
     private ProductService productService;
     private UserService userService;
 
-    @ResponseBody
-    @RequestMapping(value = "/newOrder")
-    public Order newOrder(@RequestParam("productId") int productId,
-                                 @RequestParam("quantity") int quantity, Principal principal){
-        Order order = null;
-        try{
-            String username = principal.getName();
-            User user = userService.getUser(username);
-            Product product = productService.find(productId);
-            order = new Order(product , user, quantity);
-            orderService.add(order);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        return order;
-    }
 
     @ResponseBody
     @RequestMapping(value = "/list")

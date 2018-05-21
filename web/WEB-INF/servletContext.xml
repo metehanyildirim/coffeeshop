@@ -15,7 +15,6 @@
     </bean>
 
 
-
     <bean id="myDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
         <property name="url" value="jdbc:postgresql://localhost:32768/" />
@@ -88,12 +87,6 @@
         <property name="productService" ref="productService"/>
         <property name="orderService" ref="orderService"/>
         <property name="userService" ref="userService"/>
-    </bean>
-
-    <bean name="homeController" class="edu.hacettepe.controllers.HomeController">
-        <property name="productService" ref="productService" />
-        <property name="userService" ref="userService"/>
-        <property name="orderService" ref="orderService"/>
     </bean>
 
 </beans>

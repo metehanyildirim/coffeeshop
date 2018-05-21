@@ -2,6 +2,7 @@ package edu.hacettepe.controllers;
 
 import edu.hacettepe.DAO.User;
 import edu.hacettepe.services.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -16,21 +17,14 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     private UserService userService;
 
 
     @ResponseBody
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public ModelAndView registerSend(){
-        return new ModelAndView("register");
-    }
-
-
-    @ResponseBody
     @RequestMapping(value = "/add")
-    public User add(@ModelAttribute("user") User user){
+    public ResponseEntity add(@RequestBody User user){
         User ouruser = null;
         try{
             ouruser = userService.addUser(
@@ -38,43 +32,72 @@ public class UserController {
         }catch (IOException e){
             e.printStackTrace();
         }
-        return ouruser;
+        if(ouruser == null){
+            return ResponseEntity.ok().body("{\"msg\":\"User failed to add.\"}");
+        } else {
+            return ResponseEntity.ok().body(ouruser);
+        }
     }
 
     @ResponseBody
-    @RequestMapping(value = "/delete")
-    public User delete(@RequestParam("id") int id){
+    @RequestMapping(value = "/get")
+    public ResponseEntity get(@RequestBody User user){
+        User ouruser = null;
+        try{
+            ouruser = userService.getUser(user.getUsername());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        if(ouruser != null && ouruser.getPassword().equals(user.getPassword())){
+           return ResponseEntity.ok().body(ouruser);
+        } else {
+           return ResponseEntity.ok().body("{\"msg\":\"Wrong Credentials\"}");
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/delete/{id}")
+    public ResponseEntity delete(@PathVariable("id") int id){
         User user = null;
         try{
             user = userService.deleteUser(id);
         }catch (IOException e){
             e.printStackTrace();
         }
-        return user;
+        if(user != null){
+            return ResponseEntity.ok().body(user);
+        } else {
+            return ResponseEntity.ok().body("{\"msg\":\"This user doesn't exist.\"}");
+        }
     }
 
     @ResponseBody
     @RequestMapping(value = "/list")
-    public List<User> list(Principal principal){
-        List<User> users = new ArrayList<User>();
+    public ResponseEntity list(){
+        List<User> users = null;
         try {
             users = userService.listUsers();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        return users;
+        if(users == null){
+            return ResponseEntity.ok().body("{\"msg\":\"Users failed to list\"}");
+        } else {
+            return ResponseEntity.ok().body(users);
+        }
     }
 
     @ResponseBody
     @RequestMapping(value = "/update")
-    public User update(@ModelAttribute("user") User user, Principal principal){
+    public ResponseEntity update(@RequestBody User user){
         try{
             userService.updateUser(user);
         }catch (IOException e){
             e.printStackTrace();
         }
-        return user;
+        return ResponseEntity.ok().body(user);
     }
 
 

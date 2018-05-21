@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController
 {
     private ProductService productService;
@@ -31,8 +31,8 @@ public class ProductController
     }
 
     @ResponseBody
-    @RequestMapping(value = "/get", method = RequestMethod.GET)
-    public Product get(@RequestParam("id") int id)
+    @RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
+    public Product get(@PathVariable int id)
     {
         Product product = null;
         try{

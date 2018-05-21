@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/api")
 public class APIController {
 
     ProductService productService;
@@ -27,7 +27,7 @@ public class APIController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/newOrder", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/newOrder",produces = MediaType.APPLICATION_JSON_VALUE)
     public Order newOrder(@RequestParam("productId") int productId,
                           @RequestParam("quantity") int quantity,
                           @RequestParam("userId") int userId){
